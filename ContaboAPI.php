@@ -23,7 +23,7 @@ class ContaboAPI
         if($authenticate->failed())
         {
             if($authenticate->unauthorized() OR $authenticate->forbidden()) {
-                throw new \Exception("[Contabo] This action is unauthorized! Confirm that API token has the right permissions");
+                throw new \Exception("[Contabo] This action is unauthorized! Confirm that the config is setup correctly");
             }
 
             // dd($authenticate);
@@ -31,7 +31,7 @@ class ContaboAPI
                 throw new \Exception("[Contabo] Internal Server Error: {$authenticate->status()}");
             }
 
-            throw new \Exception("[Contabo] Failed to connect to the API. Ensure the API details and hostname are valid.");
+            throw new \Exception("[Contabo] Failed to connect to the API! Confirm that the config is setup correctly");
         }
 
         if(!isset($authenticate['access_token'])) {
@@ -48,7 +48,7 @@ class ContaboAPI
         if($response->failed())
         {
             if($response->unauthorized() OR $response->forbidden()) {
-                throw new \Exception("[Contabo] This action is unauthorized! Confirm that API token has the right permissions");
+                throw new \Exception("[Contabo] This action is unauthorized! Confirm that the config is setup correctly");
             }
 
             // dd($response);
@@ -56,7 +56,7 @@ class ContaboAPI
                 throw new \Exception("[Contabo] Internal Server Error: {$response->status()}");
             }
 
-            throw new \Exception("[Contabo] Failed to connect to the API. Ensure the API details and hostname are valid.");
+            throw new \Exception("[Contabo] Failed to connect to the API! Confirm that the config is setup correctly");
         }
 
         return $response;
@@ -83,6 +83,20 @@ class ContaboAPI
     }
 
     /**
+     * Create a new server
+    */
+    public function createServer($data)
+    {
+        return $this->api('post', "/compute/instances", [
+            'displayName' => $data['display_name'],
+            'imageId' => $data['image'],
+            'productId' => $data['product'],
+            'region' => $data['region'],
+            'period' => $data['period'],
+        ])->collect();
+    }
+
+    /**
      * Get a server from ID
     */
     public function getServer($serverID)
@@ -98,6 +112,18 @@ class ContaboAPI
         return $this->api('get', "/compute/instances/actions/audits", [
             'instanceId' => $serverID,
         ])->collect();
+    }
+
+    /**
+     * cancel a server from ID
+    */
+    public function cancelServer($serverID): void
+    {
+        try {
+            $this->api('post', "/compute/instances/{$serverID}/cancel")->collect();
+        } catch (\Exception $e) {
+            ErrorLog("contabo::cancel::server::{$serverID}", $e->getMessage(), 'CRITICAL');
+        }
     }
     
     /**

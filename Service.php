@@ -204,6 +204,20 @@ class Service implements ServiceInterface
     }
 
     /**
+     * Test API connection
+     */
+    public static function testConnection()
+    {
+        try {
+            contabo()->getServers();
+        } catch(\Exception $error) {
+            return redirect()->back()->withError("Failed to connect to Contabo. <br><br>{$error->getMessage()}");
+        }
+
+        return redirect()->back()->withSuccess("Successfully connected with Contabo API");
+    }
+
+    /**
      * Define buttons shown at order management page
      *
      * @return array
