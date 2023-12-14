@@ -1,0 +1,11 @@
+{
+    "name": "Contabo",
+    "alias": "contabo",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "App\\Services\\Contabo\\Providers\\ContaboServiceProvider"
+    ],
+    "files": []
+}
