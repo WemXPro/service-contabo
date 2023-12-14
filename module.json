@@ -7,5 +7,5 @@
     "providers": [
         "App\\Services\\Contabo\\Providers\\ContaboServiceProvider"
     ],
-    "files": []
+    "files": ["helpers.php"]
 }
